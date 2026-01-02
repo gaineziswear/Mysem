@@ -2,16 +2,16 @@ name: Build Android APK
 
 on:
   push:
-    branches: 
+    branches:
       - main
   workflow_dispatch:
 
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
       
       - name: Setup Node.js
@@ -19,90 +19,27 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Install Dependencies
-        run: npm install
-      
-      - name: Build Web App
-        run: npm run build
-      
-      - name: Setup Java JDK
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
       
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Install dependencies
+        run: npm install
       
-      - name: Install Capacitor CLI
-        run: npm install -g @capacitor/cli
+      - name: Build web app
+        run: npm run build
       
-      - name: Install Capacitor Dependencies
-        run: npm install @capacitor/core @capacitor/android
-      
-      - name: Initialize Capacitor
-        run: npx cap init SEMDEX mu.semdex.app --web-dir=dist
-      
-      - name: Add Android Platform
-        run: npx cap add android
-      
-      - name: Sync Capacitor
-        run: npx cap sync android
-      
-      - name: Grant Execute Permission
-        run: chmod +x android/gradlew
-      
-      - name: Build Debug APK
-        working-directory: android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
-      
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: semdex-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30        run: npm install -g @capacitor/cli
-      
-      - name: Install Capacitor Dependencies
-        run: npm install @capacitor/core @capacitor/android
+      - name: Install Capacitor
+        run: |
+          npm install -g @capacitor/cli
+          npm install @capacitor/core @capacitor/android
       
       - name: Initialize Capacitor
         run: npx cap init SEMDEX mu.semdex.app --web-dir=dist
       
-      - name: Add Android Platform
-        run: npx cap add android
-      
-      - name: Sync Capacitor
-        run: npx cap sync android
-      
-      - name: Grant Execute Permission
-        run: chmod +x android/gradlew
-      
-      - name: Build Debug APK
-        working-directory: android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
-      
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: semdex-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
-      
-      - name: Create Release
-        if: github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: SEMDEX v1.0.${{ github.run_number }}
-          files: android/app/build/outputs/apk/debug/app-debug.apk
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        run: |
-          npx cap init "SEMDEX" "mu.semdex.app" --web-dir=dist
-      
-      - name: Add Android Platform
+      - name: Add Android platform
         run: npx cap add android
       
       - name: Sync Capacitor
@@ -111,22 +48,11 @@ jobs:
       - name: Build APK
         run: |
           cd android
-          chmod +x ./gradlew
+          chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
       
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: semdex-debug-apk
+          name: semdex-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
-
-      - name: Create Release
-        if: github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: SEMDEX v1.0.${{ github.run_number }}
-          files: android/app/build/outputs/apk/debug/app-debug.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
