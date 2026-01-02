@@ -1,70 +1,70 @@
-import React, { useState } from 'react';
-import { Mail, Phone, Key, TrendingUp } from 'lucide-react';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Mail, Phone, Key, TrendingUp } from 'lucide-react'
 
-export default function Login() {
-  const [loginMethod, setLoginMethod] = useState<'email' | 'phone' | 'magic'>('email');
-  const [identifier, setIdentifier] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+interface LoginProps {
+  onLogin: () => void
+}
+
+export default function Login({ onLogin }: LoginProps) {
+  const navigate = useNavigate()
+  const [loginMethod, setLoginMethod] = useState<'email' | 'phone' | 'magic'>('email')
+  const [identifier, setIdentifier] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const validUsers = [
     { email: 'pbernardproxy@gmail.com', phone: '+230 54557219', name: 'Patrick Ian Bernard' },
     { email: 'audrey.l.brutus@gmail.com', phone: '+230 54951814', name: 'Marie Audrey Laura Brutus' },
-  ];
+  ]
 
   const handleLogin = async () => {
-    setLoading(true);
-    setError('');
+    setLoading(true)
+    setError('')
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
-    // Validate credentials
     const isValid = validUsers.some(
       user => user.email === identifier || user.phone === identifier
-    );
+    )
 
     if (!isValid) {
-      setError('Invalid credentials. Only authorized users can access SEMDEX.');
-      setLoading(false);
-      return;
+      setError('Invalid credentials. Only authorized users can access SEMDEX.')
+      setLoading(false)
+      return
     }
 
-    // Success - redirect to dashboard
-    alert('Login successful! Redirecting to dashboard...');
-    setLoading(false);
-  };
+    onLogin()
+    navigate('/dashboard')
+  }
 
   const sendMagicLink = async () => {
     if (!identifier) {
-      setError('Please enter your email address');
-      return;
+      setError('Please enter your email address')
+      return
     }
 
-    setLoading(true);
-    setError('');
+    setLoading(true)
+    setError('')
 
-    // Simulate sending magic link
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 1500))
 
-    const isValid = validUsers.some(user => user.email === identifier);
+    const isValid = validUsers.some(user => user.email === identifier)
     
     if (!isValid) {
-      setError('Email not found. Only authorized users can access SEMDEX.');
+      setError('Email not found. Only authorized users can access SEMDEX.')
     } else {
-      alert(`Magic link sent to ${identifier}! Check your email.`);
+      alert(`Magic link sent to ${identifier}! Check your email.`)
     }
     
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 flex items-center justify-center p-4">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iIzAwODhGRSIgc3Ryb2tlLW9wYWNpdHk9Ii4xIi8+PC9nPjwvc3ZnPg==')] opacity-10"></div>
+      <div className="absolute inset-0 opacity-10"></div>
 
       <div className="relative w-full max-w-md">
-        {/* Logo & Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl shadow-2xl mb-4">
             <TrendingUp className="w-10 h-10 text-white" />
@@ -74,11 +74,9 @@ export default function Login() {
           <p className="text-blue-300 text-sm mt-1">MCB Group Ltd</p>
         </div>
 
-        {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <h2 className="text-2xl font-bold text-slate-900 mb-6">Welcome Back</h2>
 
-          {/* Method Selector */}
           <div className="flex space-x-2 mb-6">
             <button
               onClick={() => setLoginMethod('email')}
@@ -115,7 +113,6 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Login Input */}
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -161,7 +158,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* Authorized Users */}
           <div className="mt-6 pt-6 border-t border-slate-200">
             <p className="text-xs text-slate-500 text-center mb-3">Authorized Users Only</p>
             <div className="space-y-2">
@@ -175,7 +171,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Local Device Access */}
           <div className="mt-6">
             <button className="w-full py-2 px-4 border-2 border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-all">
               Use Device Biometrics
@@ -183,7 +178,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-blue-200 text-sm">
             © 2026 SEMDEX Platform • Mauritius
@@ -194,5 +188,5 @@ export default function Login() {
         </div>
       </div>
     </div>
-  );
-      }
+  )
+}
