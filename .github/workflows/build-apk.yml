@@ -2,7 +2,8 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main
   workflow_dispatch:
 
 jobs:
@@ -35,6 +36,32 @@ jobs:
       
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli
+      
+      - name: Install Capacitor Dependencies
+        run: npm install @capacitor/core @capacitor/android
+      
+      - name: Initialize Capacitor
+        run: npx cap init SEMDEX mu.semdex.app --web-dir=dist
+      
+      - name: Add Android Platform
+        run: npx cap add android
+      
+      - name: Sync Capacitor
+        run: npx cap sync android
+      
+      - name: Grant Execute Permission
+        run: chmod +x android/gradlew
+      
+      - name: Build Debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: semdex-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30        run: npm install -g @capacitor/cli
       
       - name: Install Capacitor Dependencies
         run: npm install @capacitor/core @capacitor/android
