@@ -1,6 +1,7 @@
-name: Build APK
+name: Build Android APK
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,16 +15,16 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      
       - run: npm install
       - run: npm run build
+      - run: npm install -g @capacitor/cli
+      - run: npm install @capacitor/core @capacitor/android
       - run: npx cap init SEMDEX mu.semdex.app --web-dir=dist
       - run: npx cap add android
-      - run: cd android && echo 'configurations.all { exclude group:"org.jetbrains.kotlin" }' >> app/build.gradle
+      - run: cd android && echo 'configurations.all { exclude group:"org.jetbrains.kotlin", module:"kotlin-stdlib-jdk7"; exclude group:"org.jetbrains.kotlin", module:"kotlin-stdlib-jdk8" }' >> app/build.gradle
       - run: npx cap sync
-      - run: cd android && ./gradlew assembleDebug
-      
+      - run: cd android && chmod +x gradlew && ./gradlew clean assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: apk
+          name: semdex-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
